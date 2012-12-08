@@ -1,0 +1,49 @@
+#!/bin/bash
+# rdumpfs - rsync-based dump file system backup tool
+# Usage: rdumpfs [-f] [RSYNCOPT...] SRC [SRC...] DST
+#   -f: force potentially dangerous operations
+#
+# Written by Christian Neukirchen <http://purl.org/net/chneukirchen>.
+# rdumpfs is in the public domain.
+#
+# To the extent possible under law, the creator of this work has waived
+# all copyright and related or neighboring rights to this work.
+# http://creativecommons.org/publicdomain/zero/1.0/
+
+fail() {
+  echo "$0: $1" 1>&2
+  exit 111
+}
+
+force=false
+[[ "$1" = -f ]] && force=true && shift
+
+src=("${@:1:$#-1}")
+dst=${!#}
+
+now=$(date +%Y%m%d)
+last=$(rsync $dst/ | cut -c44- | grep '^[0-9]*$' | sort -n | tail -1)
+
+rsync_args=(-aHAX --stats --human-readable
+            --out-format='%10l %n%L' --log-file-format='%10l %i %n%L'
+            --filter='dir-merge /.rdumpfs' --filter='protect .rdumpfs.*.log')
+rsync_args+=(${VARIANT:+--filter='dir-merge /.rdumpfs.'$VARIANT})
+
+if [[ -z "$last" ]]; then
+  $force || fail "no dump found, use -f on first dump."
+else
+  rsync_args+=(--link-dest=../$last)
+fi
+
+if [[ "$last" = "$now" ]]; then
+  $force || fail "dump $now exists, use -f to overwrite/update."
+  rsync_args+=(--delete-delay --delete-excluded)
+fi
+
+LOGFILE=$(mktemp .rdumpfs.XXXXXXXX.log)
+trap "rm -f $LOGFILE" INT QUIT TERM HUP EXIT
+
+rsync --log-file $LOGFILE "${rsync_args[@]}" "${src[@]}" "$dst/$now"
+EC=$?
+rsync $LOGFILE "$dst/$now/"
+exit $EC

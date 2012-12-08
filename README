@@ -1,0 +1,94 @@
+= rdumpfs, a rsync-based dump file system backup tool
+
+== Usage
+
+Run "rdumpfs SRC... DST" to create a daily backup of the SRC folders
+at the rsync-target DST.  SRC or DST can be local or remote addresses.
+Only incremental changes against the last version use disk space,
+unchanged files are hardlinked.
+
+Note that rdumpfs just wraps rsync, so the trailing slashes of SRC are
+treated as in rsync: A trailing slash avoids creating an additional
+directory level at the destination.
+
+To give you an idea, a example tree after running
+  rdumpfs /home /dump
+on two days:
+
+  /dump/
+    20121208/
+      .rdumpfs.12312.log
+      home/
+        chris/
+          foo
+          delete_me_soon
+          ...
+    20121209/
+      .rdumpfs.98945.log
+      home/
+        chris/
+          foo -> hardlinked, same file as /dump/20121208/home/chris/foo
+          new
+          ...
+
+== Features
+
+* Only needs bash (or zsh) and rsync.
+* Uses robust rsync command for all backup logic.
+* Per-folder file ".rdumpfs" to configure exclusions (with possibly
+  additional variants).
+* Never deletes files (except in the current backup, only if -f is
+  passed), clean up old dumps yourself.
+* Backups can be resumed/updated (e.g. if you backed up a big file
+  accidentally today, you can just exclude it and re-run the backup.)
+* Remote backup goes both ways: Remote systems can backup your files
+  ("pull"), or you can backup to remote systems ("push").
+* Easily hackable script, in case your needs are different from mine.
+
+== rsync options that may be useful together with rdumpfs
+
+* --fake-super to backup to non-root accounts
+* --bwlimit so you don't clog your connection
+* --partial to continue backups of big files
+* --exclude for global excludes
+* --dry-run to see what would happen
+
+== Why not use...
+
+Obviously, there are many similar scripts, among which I have used
+dirvish and rsnapshot before writing rdumpfs for keeping daily dumps.
+
+* dirvish: Requires Perl with non-standard libraries.  Cannot continue
+  partial backups.  Complex configuration.  No push backup.
+
+* rsnapshot: Requires Perl.  No date-based directory naming.  Obscure
+  configuration.  No push backup.
+
+* pdumpfs: Requires Ruby.  No special files.  No remote backups.
+
+* rsync-incr: No push backup.
+
+* rdiff-backup: Requires Python.  Old backups are not kept accessible in
+  the file system.
+
+* duplicity: Requires Python.  Backups are not kept accessible in the
+  file system.
+
+* rsback: Requires Perl.  No date-based directory naming.
+
+== When not use rdumpfs?
+
+* You want encrypted backups (try duplicity).
+* You need incremental backups on a lower granularity than files (try
+  bup, vac, dar).
+* Your target doesn't support hardlinks/SSH/rsync (try duplicity).
+* You want automatic expiry (try dirvish).
+
+== Copyright
+
+rdumpfs is in the public domain.
+
+To the extent possible under law, the creator of this work has waived
+all copyright and related or neighboring rights to this work.
+
+http://creativecommons.org/publicdomain/zero/1.0/
