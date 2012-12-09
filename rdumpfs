@@ -40,7 +40,7 @@ if [[ "$last" = "$now" ]]; then
   rsync_args+=(--delete-delay --delete-excluded)
 fi
 
-LOGFILE=$(mktemp .rdumpfs.XXXXXXXX.log)
+LOGFILE=$(mktemp -t .rdumpfs.XXXXXXXX.log)
 trap "rm -f $LOGFILE" INT QUIT TERM HUP EXIT
 
 rsync --log-file $LOGFILE "${rsync_args[@]}" "${src[@]}" "$dst/$now"
