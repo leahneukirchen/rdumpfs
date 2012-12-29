@@ -43,9 +43,8 @@ if [[ "$last" = "$now" ]]; then
 fi
 
 LOGFILE=$(mktemp -t .rdumpfs.XXXXXXXX.log)
-trap "rm -f $LOGFILE" INT QUIT TERM HUP EXIT
-
 rsync --log-file $LOGFILE "${rsync_args[@]}" "${src[@]}" "$dst/$now"
 EC=$?
 rsync $LOGFILE "$dst/$now/"
+(( $EC )) || rm -f $LOGFILE
 exit $EC
