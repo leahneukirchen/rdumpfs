@@ -22,7 +22,8 @@ src=("${@:1:$#-1}")
 dst=${!#}
 
 now=$(date +%Y%m%d)
-last=$(rsync $dst/ | cut -c44- | grep '^[0-9]*$' | sort -n | tail -1)
+dumps=($(rsync $dst/ | cut -c44- | grep '^[0-9]*$' | sort -nr))
+last=${dumps[0]}
 
 rsync_args=(-aHAX --stats --human-readable
             --out-format='%10l %n%L' --log-file-format='%10l %i %n%L'
@@ -37,6 +38,7 @@ fi
 
 if [[ "$last" = "$now" ]]; then
   $force || fail "dump $now exists, use -f to overwrite/update."
+  [[ -n "${dumps[1]}" ]] && rsync_args+=(--link-dest=../${dumps[1]})
   rsync_args+=(--delete-delay --delete-excluded)
 fi
 
