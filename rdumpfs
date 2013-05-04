@@ -18,6 +18,9 @@ fail() {
 force=false
 [[ "$1" = -f ]] && force=true && shift
 
+(( $# < 2 )) && fail "too few arguments
+Usage: rdumpfs [-f] [RSYNCOPT...] SRC [SRC...] DST"
+
 src=("${@:1:$#-1}")
 dst=${!#}
 
