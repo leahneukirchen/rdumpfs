@@ -1,0 +1,41 @@
+#!/bin/bash
+# yday [-D DUMPDIR] [-a] [-d] [-n DAYS] FILES... - retrieve paths from the dump
+#   -a  all versions
+#   -d  diff against current file
+#   -n  start DAYS back
+
+: ${RDUMPFS_DUMP:=/data/dump/$HOSTNAME}
+
+Xecho() {
+  echo "$1"
+}
+
+Xdiff() {
+  diff -u "$1" "$2"
+}
+
+all=false
+op=Xecho
+n=0
+
+while getopts adn:D: opt; do
+  case "$opt" in
+    a) all=true;;
+    d) op=Xdiff;;
+    n) n="$OPTARG";;
+    D) RDUMPFS_DUMP="$OPTARG";;
+    [?]) exit;;
+  esac
+done
+shift $((OPTIND-1))
+
+for file; do
+  ABSOLUTE=$(readlink -f "$file")
+  for d in $(seq $n 1000); do
+    DUMPED=$RDUMPFS_DUMP/$(date --date "$d day ago" +%Y%m%d)$ABSOLUTE
+    if [ -e "$DUMPED" ]; then
+      $op "$DUMPED" "$ABSOLUTE"
+      $all || break
+    fi
+  done
+done
