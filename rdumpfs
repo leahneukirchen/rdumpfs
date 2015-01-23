@@ -28,7 +28,8 @@ now=$(date +%Y%m%d)
 dumps=($(rsync --no-h $dst/ | cut -c44- | grep '^[0-9]*$' | sort -nr))
 last=${dumps[0]}
 
-rsync_args=(-aHAX --stats --human-readable
+: ${RDUMPFS_DEFAULT_ARGS:=-aHAX}
+rsync_args=($RDUMPFS_DEFAULT_ARGS --stats --human-readable
             --out-format='%10l %n%L' --log-file-format='%10l %i %n%L'
             --filter='dir-merge /.rdumpfs' --filter='protect .rdumpfs.*.log')
 rsync_args+=(${VARIANT:+--filter='dir-merge /.rdumpfs.'$VARIANT})
