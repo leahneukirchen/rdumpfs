@@ -1,0 +1,11 @@
+- /tmp
+- /var/tmp
+- /home/tmp
+- /proc
+- /run
+- /sys
+- /dev
+- /media
+- /mnt
+- lost+found/
+- /var/cache

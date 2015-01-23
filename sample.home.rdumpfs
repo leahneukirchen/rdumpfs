@@ -1,0 +1,6 @@
+- .mutt/headercache
+- .xsession-errors.*
+- src/rust
+- .emacs.d/url/cache
+- .cache
+- tmp
