@@ -3,7 +3,7 @@
 # Usage: rdumpfs [-f] [RSYNCOPT...] SRC [SRC...] DST
 #   -f: force potentially dangerous operations
 #
-# Written by Christian Neukirchen <http://purl.org/net/chneukirchen>.
+# Written by Leah Neukirchen <http://purl.org/net/chneukirchen>.
 # rdumpfs is in the public domain.
 #
 # To the extent possible under law, the creator of this work has waived
