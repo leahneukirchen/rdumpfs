@@ -57,7 +57,7 @@ on two days:
 
 Obviously, there are many similar scripts, among which I have used
 dirvish and rsnapshot before writing rdumpfs for keeping daily dumps.
-Currently I use rdumpfs and attic.
+Currently I use rdumpfs and borg.
 
 * dirvish: Requires Perl with non-standard libraries.  Cannot continue
   partial backups.  Complex configuration.  No push backup.
@@ -78,13 +78,16 @@ Currently I use rdumpfs and attic.
 * rsback: Requires Perl.  No date-based directory naming.
 
 * attic: Requires Python.  Backups are not kept accessible in the
+  file system.  Unmaintained.
+
+* borg: Requires Python.  Backups are not kept accessible in the
   file system.  Else highly recommended.
 
 == When not use rdumpfs?
 
-* You want encrypted backups (try attic, duplicity).
+* You want encrypted backups (try borg, duplicity).
 * You need incremental backups on a higher granularity than files (try
-  attic, bup, vac, dar).
+  borg, bup, vac, dar).
 * Your target doesn't support hardlinks/SSH/rsync (try duplicity).
 * You want automatic expiry (try dirvish).
 
