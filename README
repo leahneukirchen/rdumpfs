@@ -44,6 +44,7 @@ on two days:
 * Remote backup goes both ways: Remote systems can backup your files
   ("pull"), or you can backup to remote systems ("push").
 * Easily hackable script, in case your needs are different from mine.
+* Pass -j to do a full backup using copy-dest
 
 == rsync options that may be useful together with rdumpfs
 

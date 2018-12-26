@@ -18,8 +18,11 @@ fail() {
 force=false
 [[ "$1" = -f ]] && force=true && shift
 
+link_or_copy=link
+[[ "$1" = -j ]] && link_or_copy=copy && shift
+
 (( $# < 2 )) && fail "too few arguments
-Usage: rdumpfs [-f] [RSYNCOPT...] SRC [SRC...] DST"
+Usage: rdumpfs [-f] [-j] [RSYNCOPT...] SRC [SRC...] DST"
 
 src=("${@:1:$#-1}")
 dst=${!#}
@@ -37,12 +40,12 @@ rsync_args+=(${VARIANT:+--filter='dir-merge /.rdumpfs.'$VARIANT})
 if [[ -z "$last" ]]; then
   $force || fail "no dump found, use -f on first dump."
 else
-  rsync_args+=(--link-dest=../$last)
+  rsync_args+=(--${link_or_copy}-dest=../$last)
 fi
 
 if [[ "$last" = "$now" ]]; then
   $force || fail "dump $now exists, use -f to overwrite/update."
-  [[ -n "${dumps[1]}" ]] && rsync_args+=(--link-dest=../${dumps[1]})
+  [[ -n "${dumps[1]}" ]] && rsync_args+=(--${link_or_copy}-dest=../${dumps[1]})
   rsync_args+=(--delete-delay --delete-excluded)
 fi
 
