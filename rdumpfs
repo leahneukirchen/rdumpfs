@@ -28,7 +28,7 @@ src=("${@:1:$#-1}")
 dst=${!#}
 
 now=$(date +%Y%m%d)
-dumps=($(rsync --no-h $dst/ | cut -c44- | grep '^[0-9]*$' | sort -nr))
+dumps=($(rsync --no-h $dst/ | cut -c44- | grep '^[0-9]\+$' | sort -nr))
 last=${dumps[0]}
 
 : ${RDUMPFS_DEFAULT_ARGS:=-aHAX}
